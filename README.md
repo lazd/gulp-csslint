@@ -13,7 +13,7 @@ npm install --save-dev gulp-csslint
 Then, add it to your `gulpfile.js`:
 
 ```javascript
-var jshint = require('gulp-csslint');
+var csslint = require('gulp-csslint');
 
 gulp.task('css', function() {
   gulp.src('./client/css/*.css')

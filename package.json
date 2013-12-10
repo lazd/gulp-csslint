@@ -1,6 +1,6 @@
 {
   "name": "gulp-csslint",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "CSSLint plugin for Gulp",
   "main": "index.js",
   "dependencies": {
@@ -21,7 +21,6 @@
   },
   "keywords": [
     "gulpplugin",
-    "gulp",
     "csslint"
   ],
   "author": "Larry Davis <lazdnet@gmail.com>",
