@@ -6,10 +6,10 @@ var path = require('path');
 require('mocha');
 
 var getFile = function(filePath) {
-  filePath = './test/'+filePath;
+  filePath = 'test/'+filePath;
   return new gutil.File({
     path: filePath,
-    cwd: './test/',
+    cwd: 'test/',
     base: path.dirname(filePath),
     contents: fs.readFileSync(filePath)
   });
@@ -28,7 +28,7 @@ describe('gulp-csslint', function() {
         should.exist(newFile.path);
         should.exist(newFile.relative);
         should.exist(newFile.contents);
-        newFile.path.should.equal('./test/fixtures/validCSS.css');
+        newFile.path.should.equal('test/fixtures/validCSS.css');
         newFile.relative.should.equal('validCSS.css');
         ++a;
       });
