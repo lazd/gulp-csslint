@@ -9,7 +9,6 @@ var fs = require('fs');
 var csslint = require('csslint').CSSLint;
 
 var formatOutput = function(report, file, options) {
-  // no error
   if (!report.messages.length) {
     return { 
       success: true
@@ -53,7 +52,7 @@ var cssLintPlugin = function(options) {
       throw new Error('Error parsing csslintrc: '+err);
     }
 
-    // Override external options with options specified in Gulpfile
+    // Override external options with options specified in gulpfile
     for (var option in options) {
       externalOptions[option] = options[option];
     }
@@ -77,7 +76,7 @@ var cssLintPlugin = function(options) {
     }
   }
 
-  return es.map(function (file, cb) {
+  return es.map(function(file, cb) {
     var report = csslint.verify(String(file.contents), ruleset);
 
     // send status down-stream

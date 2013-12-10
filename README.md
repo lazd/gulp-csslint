@@ -1,6 +1,6 @@
 # gulp-csslint  [![Build status][travis-image]][travis-url]  [![NPM version][npm-image]][npm-url]
 
-> CSSLint plugin for Gulp
+> CSSLint plugin for gulp
 
 ## Usage
 
@@ -10,7 +10,7 @@ First, install `gulp-csslint` as a development dependency:
 npm install --save-dev gulp-csslint
 ```
 
-Then, add it to your `Gulpfile.js`:
+Then, add it to your `gulpfile.js`:
 
 ```javascript
 var jshint = require('gulp-csslint');
