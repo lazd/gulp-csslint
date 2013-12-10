@@ -1,4 +1,4 @@
-# gulp-csslint
+# gulp-csslint  [![Build status][travis-image]][travis]
 > CSSLint plugin for Gulp
 
 ## Usage
@@ -78,3 +78,6 @@ gulp.task('lint', function() {
     .pipe(csslint.reporter(customReporter));
 });
 ```
+
+[travis]: http://travis-ci.org/lazd/gulp-csslint
+[travis-image]: https://secure.travis-ci.org/lazd/gulp-csslint.png?branch=master
