@@ -1,6 +1,5 @@
-# gulp-csslint  [![Build status][travis-image]][travis-url]  [![NPM version][npm-image]][npm-url]
-
-> CSSLint plugin for gulp
+# gulp-csslint [![NPM version][npm-image]][npm-url] [![Build status][travis-image]][travis-url]
+> CSSLint plugin for gulp 3
 
 ## Usage
 
