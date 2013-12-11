@@ -17,7 +17,7 @@ var getFile = function(filePath) {
 
 describe('gulp-csslint', function() {
   describe('cssLintPlugin()', function() {
-    it('file should pass through', function(done) {
+    it('should pass file through', function(done) {
       var a = 0;
 
       var file = getFile('fixtures/validCSS.css');
