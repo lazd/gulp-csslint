@@ -21,9 +21,12 @@ gulp.task('css', function() {
 });
 ```
 
-## Options
+## API
 
-### Rule configuration
+### csslint(ruleConfiguration)
+
+#### ruleConfiguration
+Type: `Object`
 
 You can pass rule configuration as an object. See the [list of rules by ID on the CSSLint wiki](https://github.com/stubbornella/csslint/wiki/Rules-by-ID) for valid rule IDs.
 
@@ -35,9 +38,12 @@ gulp.src('./client/css/*.css')
   .pipe(csslint.reporter());
 ```
 
-### CSSLint RC
+### csslint(csslintrc)
 
-You can also pass the path to your csslintrc file:
+#### csslintrc
+Type: `String`
+
+You can also pass the path to your csslintrc file instead of a rule configuration object.
 
 ```javascript
 gulp.src('./client/css/*.css')
