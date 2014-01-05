@@ -46,19 +46,11 @@ var cssLintPlugin = function(options) {
     var externalOptions = fs.readFileSync('./'+options);
 
     try {
-      externalOptions = JSON.parse(externalOptions);
+      options = JSON.parse(externalOptions);
     }
     catch(err) {
       throw new Error('Error parsing csslintrc: '+err);
     }
-
-    // Override external options with options specified in gulpfile
-    for (var option in options) {
-      externalOptions[option] = options[option];
-    }
-
-    // Use combined options
-    options = externalOptions;
   }
 
   // Build a list of all available rules
