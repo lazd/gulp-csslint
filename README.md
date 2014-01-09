@@ -15,7 +15,7 @@ Then, add it to your `gulpfile.js`:
 var csslint = require('gulp-csslint');
 
 gulp.task('css', function() {
-  gulp.src('./client/css/*.css')
+  gulp.src('client/css/*.css')
     .pipe(csslint())
     .pipe(csslint.reporter());
 });
@@ -31,7 +31,7 @@ Type: `Object`
 You can pass rule configuration as an object. See the [list of rules by ID on the CSSLint wiki](https://github.com/stubbornella/csslint/wiki/Rules-by-ID) for valid rule IDs.
 
 ```javascript
-gulp.src('./client/css/*.css')
+gulp.src('client/css/*.css')
   .pipe(csslint({
     'shorthand': false
   }))
@@ -46,7 +46,7 @@ Type: `String`
 You can also pass the path to your csslintrc file instead of a rule configuration object.
 
 ```javascript
-gulp.src('./client/css/*.css')
+gulp.src('client/css/*.css')
   .pipe(csslint('csslintrc.json'))
   .pipe(csslint.reporter());
 ```
@@ -79,7 +79,7 @@ var customReporter = function(file) {
 };
 
 gulp.task('lint', function() {
-  gulp.files('./lib/*.js')
+  gulp.files('lib/*.js')
     .pipe(csslint())
     .pipe(csslint.reporter(customReporter));
 });
