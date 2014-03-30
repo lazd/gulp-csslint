@@ -79,7 +79,7 @@ var customReporter = function(file) {
 };
 
 gulp.task('lint', function() {
-  gulp.files('lib/*.js')
+  gulp.files('lib/*.css')
     .pipe(csslint())
     .pipe(csslint.reporter(customReporter));
 });
