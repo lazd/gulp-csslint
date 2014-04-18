@@ -10,7 +10,7 @@ var csslint = require('csslint').CSSLint;
 
 var formatOutput = function(report, file, options) {
   if (!report.messages.length) {
-    return { 
+    return {
       success: true
     };
   }
@@ -81,8 +81,6 @@ var cssLintPlugin = function(options) {
 var defaultReporter = function(file) {
   var errorCount = file.csslint.errorCount;
   var plural = errorCount === 1 ? '' : 's';
-  
-  process.stderr.write('\x07'); // Send a beep to the terminal so it bounces
 
   gutil.log(c.cyan(errorCount)+' error'+plural+' found in '+c.magenta(file.path));
 
@@ -121,6 +119,17 @@ cssLintPlugin.reporter = function(customReporter) {
     }
 
     return cb(null, file);
+  });
+};
+
+cssLintPlugin.failReporter = function(){
+  return es.map(function (file, cb) {
+    // Nothing to report or no errors
+    if (!file.csslint || file.csslint.success) {
+      return cb(null, file);
+    }
+
+    return cb(new gutil.PluginError('gulp-csslint', 'CSSLint failed for '+file.relative), file);
   });
 };
 
