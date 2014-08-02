@@ -6,7 +6,7 @@
   "dependencies": {
     "csslint": "^0.10.0",
     "event-stream": "^3.1.2",
-    "gulp-util": "^2.2.14"
+    "gulp-util": "^3.0.0"
   },
   "devDependencies": {
     "mocha": "^1.18.2",
