@@ -64,7 +64,7 @@ file.csslint.opt = {}; // The options you passed to CSSLint
 
 ## Custom Reporters
 
-Custom reporter functions can be passed as `cssline.reporter(reporterFunc)`. The reporter function will be called for each linted file and passed the file object as described above.
+Custom reporter functions can be passed as `csslint.reporter(reporterFunc)`. The reporter function will be called for each linted file and passed the file object as described above.
 
 ```javascript
 var csslint = require('gulp-csslint');
@@ -84,6 +84,22 @@ gulp.task('lint', function() {
     .pipe(csslint.reporter(customReporter));
 });
 ```
+
+## Fail on errors
+
+Pipe the file stream to `csslint.failReporter()` to fail on errors.
+
+```javascript
+var csslint = require('gulp-csslint');
+
+gulp.task('lint', function() {
+  gulp.files('lib/*.css')
+    .pipe(csslint())
+    .pipe(csslint.reoprter()) // Display errors
+    .pipe(csslint.failReporter()); // Fail on error
+});
+```
+
 
 [travis-url]: http://travis-ci.org/lazd/gulp-csslint
 [travis-image]: https://secure.travis-ci.org/lazd/gulp-csslint.png?branch=master
