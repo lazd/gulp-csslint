@@ -95,7 +95,7 @@ var csslint = require('gulp-csslint');
 gulp.task('lint', function() {
   gulp.files('lib/*.css')
     .pipe(csslint())
-    .pipe(csslint.reoprter()) // Display errors
+    .pipe(csslint.reporter()) // Display errors
     .pipe(csslint.failReporter()); // Fail on error
 });
 ```
