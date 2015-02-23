@@ -1,0 +1,4 @@
+/* properties using important */
+.mybox {
+  border: 1px solid black !important;
+}

@@ -28,7 +28,11 @@ gulp.task('css', function() {
 #### ruleConfiguration
 Type: `Object`
 
+If you pass `lookup: false`, the local .csslintrc is not looked up automatically.
+
 You can pass rule configuration as an object. See the [list of rules by ID on the CSSLint wiki](https://github.com/stubbornella/csslint/wiki/Rules-by-ID) for valid rule IDs.
+
+Any properties passed wil be in _addition_ to (or overwriting) the ones in .csslintrc (unless `lookup: false` is passed).
 
 ```javascript
 gulp.src('client/css/*.css')
