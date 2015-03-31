@@ -68,7 +68,7 @@ file.csslint.opt = {}; // The options you passed to CSSLint
 
 ## Using reporters
 
-Several reporters come built-in to css-lint. To use one of these reporters, pass the name to `csslint.reporter`.
+Several reporters come built-in to css-lint. To use one of these reporters, pass the name to `csslint.reporter`, along with an optional file path. If the file path is included, the report will be written to this location, instead of printed in the console.
 
 For a list of all reporters supported by `csslint`, see the [csslint wiki](https://github.com/CSSLint/csslint/wiki/Command-line-interface#--format).
 
@@ -77,6 +77,15 @@ gulp.task('lint', function() {
   gulp.files('lib/*.css')
     .pipe(csslint())
     .pipe(csslint.reporter('junit-xml'));
+```
+
+If you want to print the report to disk instead of output to the console, supply the a second optional file path where the file will be written.
+
+```js
+gulp.task('lint', function() {
+  gulp.files('lib/*.css')
+    .pipe(csslint())
+    .pipe(csslint.reporter('junit-xml', 'csslint-junit-report.xml'));
 ```
 
 ### Custom reporters

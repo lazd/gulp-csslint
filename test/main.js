@@ -251,7 +251,7 @@ describe('gulp-csslint', function() {
       stream.end();
     });
 
-    it('should support built-in CSSLint formatters', sinon.test(function(done) {
+    it('should support built-in CSSLint formatters', function(done) {
       var a = 0;
 
       var file = getFile('fixtures/usingImportant.css');
@@ -283,6 +283,45 @@ describe('gulp-csslint', function() {
 
       lintStream.write(file);
       lintStream.end();
-    }));
+    });
+
+    it('should write built-in report to disk', function(done) {
+      var a = 0;
+
+      var file = getFile('fixtures/usingImportant.css');
+      var expected = getContents('expected/checkstyle-xml.xml');
+
+      var lintStream = cssLintPlugin();
+      var reporterStream = cssLintPlugin.reporter('checkstyle-xml', 'test-output.xml');
+
+      sinon.stub(gutil, 'log');
+
+      reporterStream.on('data', function() {
+        ++a;
+      });
+      lintStream.on('data', function(file) {
+        reporterStream.write(file);
+      });
+      lintStream.once('end', function() {
+        reporterStream.end();
+      });
+
+      reporterStream.once('end', function() {
+        a.should.equal(1);
+        sinon.assert.notCalled(gutil.log);
+
+        gutil.log.restore();
+
+        fs.readFile('test-output.xml', function(err, content) {
+          (err === null).should.be.true;
+
+          content.toString().should.equal(expected);
+          done();
+        });
+      });
+
+      lintStream.write(file);
+      lintStream.end();
+    });
   });
 });

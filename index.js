@@ -1,5 +1,6 @@
 'use strict';
 
+var fs = require('fs');
 var gutil = require('gulp-util');
 var through = require('through2');
 var csslint = require('csslint').CSSLint;
@@ -74,7 +75,7 @@ var cssLintPlugin = function(options) {
   });
 };
 
-cssLintPlugin.reporter = function(customReporter) {
+cssLintPlugin.reporter = function(customReporter, filePath) {
   var reporter = csslint.getFormatter('text');
   var builtInReporter = true;
   var output;
@@ -117,7 +118,12 @@ cssLintPlugin.reporter = function(customReporter) {
       if (builtInReporter) {
         output += reporter.endFormat();
 
-        gutil.log(output);
+        if (filePath) {
+          return fs.writeFile(filePath, output, cb);
+        }
+        else {
+          gutil.log(output);
+        }
       }
 
       return cb();
