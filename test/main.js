@@ -109,10 +109,10 @@ describe('gulp-csslint', function() {
     it('should support options', function(done) {
       var a = 0;
 
-      var file = getFile('fixtures/missingPrefixes.css');
+      var file = getFile('fixtures/usingImportant.css');
 
       var stream = cssLintPlugin({
-        'vendor-prefix': false
+        important: false
       });
       stream.on('data', function(newFile) {
         ++a;
@@ -135,7 +135,29 @@ describe('gulp-csslint', function() {
 
       var file = getFile('fixtures/missingPrefixes.css');
 
-      var stream = cssLintPlugin('test/csslintrc.json');
+      var stream = cssLintPlugin('test/.csslintrc');
+      stream.on('data', function(newFile) {
+        ++a;
+        should.exist(newFile.csslint.success);
+        newFile.csslint.success.should.equal(true);
+        should.not.exist(newFile.csslint.results);
+        should.not.exist(newFile.csslint.opt);
+      });
+      stream.once('end', function() {
+        a.should.equal(1);
+        done();
+      });
+
+      stream.write(file);
+      stream.end();
+    });
+
+    it('should find csslintrc automatically', function(done) {
+      var a = 0;
+
+      var file = getFile('fixtures/missingPrefixes.css');
+
+      var stream = cssLintPlugin();
       stream.on('data', function(newFile) {
         ++a;
         should.exist(newFile.csslint.success);

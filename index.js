@@ -4,9 +4,11 @@
 
 var gutil = require('gulp-util');
 var c = gutil.colors;
+var error = gutil.PluginError;
 var es = require('event-stream');
 var fs = require('fs');
 var csslint = require('csslint').CSSLint;
+var RcLoader = require('rcloader');
 
 var formatOutput = function(report, file, options) {
   if (!report.messages.length) {
@@ -40,41 +42,39 @@ var cssLintPlugin = function(options) {
 
   var ruleset = {};
 
-  // Read CSSLint options from a specified csslintrc file.
-  if (typeof options === 'string') {
-    // Don't catch readFile errors, let them bubble up
-    var externalOptions = fs.readFileSync('./'+options);
-
-    try {
-      options = JSON.parse(externalOptions);
-    }
-    catch(err) {
-      throw new Error('Error parsing csslintrc: '+err);
-    }
-  }
+  var rcLoader = new RcLoader('.csslintrc', options, { loader: 'async' });
 
   // Build a list of all available rules
   csslint.getRules().forEach(function(rule) {
     ruleset[rule.id] = 1;
   });
 
-  for (var rule in options) {
-    if (!options[rule]) {
-      // Remove rules that are turned off
-      delete ruleset[rule];
-    }
-    else {
-      ruleset[rule] = options[rule];
-    }
-  }
-
   return es.map(function(file, cb) {
-    var report = csslint.verify(String(file.contents), ruleset);
+    if (file.isNull()) return cb(null, file); // pass along
+    if (file.isStream()) return cb(new error('gulp-csslint: Streaming not supported'));
 
-    // send status down-stream
-    file.csslint = formatOutput(report, file, options);
+    rcLoader.for(file.path, function (err, opts) {
+      if (err) return cb(err);
 
-    cb(null, file);
+      var str = file.contents.toString('utf8');
+
+      for (var rule in opts) {
+        if (!opts[rule]) {
+          // Remove rules that are turned off
+          delete ruleset[rule];
+        }
+        else {
+          ruleset[rule] = opts[rule];
+        }
+      }
+
+      var report = csslint.verify(str, ruleset);
+
+      // send status down-stream
+      file.csslint = formatOutput(report, file, ruleset);
+
+      cb(null, file);
+    });
   });
 };
 
