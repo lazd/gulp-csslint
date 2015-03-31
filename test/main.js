@@ -1,9 +1,11 @@
+/*jshint expr: true*/
+
 var cssLintPlugin = require('../');
 var should = require('should');
 var gutil = require('gulp-util');
 var fs = require('fs');
 var path = require('path');
-require('mocha');
+var sinon = require('sinon');
 
 var getFile = function(filePath) {
   filePath = 'test/'+filePath;
@@ -243,5 +245,41 @@ describe('gulp-csslint', function() {
       stream.write(file);
       stream.end();
     });
+
+    it('should use built-in formatter', sinon.test(function(done) {
+      var a = 0;
+
+      var file = getFile('fixtures/usingImportant.css');
+
+      var lintStream = cssLintPlugin();
+      var reporterStream = cssLintPlugin.reporter('checkstyle-xml');
+
+      sinon.stub(gutil, 'log');
+
+      reporterStream.on('data', function() {
+        ++a;
+      });
+      lintStream.on('data', function(file) {
+        reporterStream.write(file);
+      });
+      lintStream.once('end', function() {
+        reporterStream.end();
+      });
+
+      reporterStream.once('end', function() {
+        a.should.equal(1);
+        sinon.assert.calledOnce(gutil.log, 'asdasd');
+        sinon.assert.calledWith(gutil.log, '<?xml version="1.0" encoding="utf-8"?><checkstyle><file ' +
+          'name="test/fixtures/usingImportant.css"><error line="2" column="1" severity="warning" ' +
+          'message="Bad naming: .mybox" source="net.csslint.OOCSS"/><error line="3" column="3" severity="warning" ' +
+          'message="Use of !important" source="net.csslint.Disallow!important"/></file></checkstyle>');
+
+        gutil.log.restore();
+        done();
+      });
+
+      lintStream.write(file);
+      lintStream.end();
+    }));
   });
 });

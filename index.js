@@ -1,11 +1,8 @@
-/*jshint node:true */
-
 'use strict';
 
 var gutil = require('gulp-util');
-var c = gutil.colors;
 var error = gutil.PluginError;
-var es = require('event-stream');
+var through = require('through2');
 var csslint = require('csslint').CSSLint;
 var RcLoader = require('rcloader');
 
@@ -26,14 +23,13 @@ var formatOutput = function(report, file, options) {
     return err;
   });
 
-  var output = {
+  return {
+    originalReport: report,
     errorCount: results.length,
     success: false,
     results: results,
     options: options
   };
-
-  return output;
 };
 
 var cssLintPlugin = function(options) {
@@ -48,11 +44,11 @@ var cssLintPlugin = function(options) {
     ruleset[rule.id] = 1;
   });
 
-  return es.map(function(file, cb) {
+  return through.obj(function(file, enc, cb) {
     if (file.isNull()) return cb(null, file); // pass along
-    if (file.isStream()) return cb(new error('gulp-csslint: Streaming not supported'));
+    if (file.isStream()) return cb(new error('gulp-csslint: Streaming not supported'), file);
 
-    var content = file.contents.toString('utf8');
+    var content = file.contents.toString(enc);
 
     if (!content) return cb(null, file); // pass along
 
@@ -79,47 +75,47 @@ var cssLintPlugin = function(options) {
   });
 };
 
-var defaultReporter = function(file) {
-  var errorCount = file.csslint.errorCount;
-  var plural = errorCount === 1 ? '' : 's';
-
-  gutil.log(c.cyan(errorCount)+' error'+plural+' found in '+c.magenta(file.path));
-
-  file.csslint.results.forEach(function(result) {
-    var message = result.error;
-    gutil.log(
-      c.red('[') +
-      (
-        typeof message.line !== 'undefined' ?
-          c.yellow( 'L' + message.line ) +
-          c.red(':') +
-          c.yellow( 'C' + message.col )
-        :
-          c.yellow('GENERAL')
-      ) +
-      c.red('] ') +
-      message.message + ' ' + message.rule.desc + ' (' + message.rule.id + ')');
-  });
-};
-
 cssLintPlugin.reporter = function(customReporter) {
-  var reporter = defaultReporter;
+  var reporter = csslint.getFormatter('text'), builtInReporter = true, output;
 
   if (typeof customReporter === 'function') {
     reporter = customReporter;
+    builtInReporter = false;
+  } else if (typeof customReporter === 'string') {
+    if (customReporter === 'fail') {
+      return cssLintPlugin.failReporter();
+    }
+
+    reporter = csslint.getFormatter(customReporter);
   }
 
   if (typeof reporter === 'undefined') {
     throw new Error('Invalid reporter');
   }
 
-  return es.map(function(file, cb) {
+  if (builtInReporter) {
+    output = reporter.startFormat();
+  }
+
+  return through.obj(function(file, enc, cb) {
     // Only report if CSSLint was ran and errors were found
     if (file.csslint && !file.csslint.success) {
-      reporter(file);
+      if (builtInReporter) {
+        output += reporter.formatResults(file.csslint.originalReport, file.path);
+      } else {
+        reporter(file);
+      }
     }
 
     return cb(null, file);
+  }, function(cb) {
+    if (builtInReporter) {
+      output += reporter.endFormat();
+
+      gutil.log(output);
+    }
+
+    return cb();
   });
 };
 
@@ -131,7 +127,7 @@ cssLintPlugin.addRule = function(rule) {
 };
 
 cssLintPlugin.failReporter = function() {
-  return es.map(function(file, cb) {
+  return through.obj(function(file, enc, cb) {
     // Nothing to report or no errors
     if (!file.csslint || file.csslint.success) {
       return cb(null, file);

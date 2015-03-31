@@ -8,9 +8,9 @@
   ],
   "dependencies": {
     "csslint": "^0.10.0",
-    "event-stream": "^3.3.1",
     "gulp-util": "^3.0.4",
-    "rcloader": "^0.1.4"
+    "rcloader": "^0.1.4",
+    "through2": "^2.0.0"
   },
   "devDependencies": {
     "coveralls": "^2.11.2",
@@ -19,7 +19,8 @@
     "jshint": "^2.7.0",
     "mocha": "^2.2.5",
     "rimraf": "^2.3.4",
-    "should": "^6.0.3"
+    "should": "^7.0.3",
+    "sinon": "^1.15.4"
   },
   "scripts": {
     "clean": "rimraf coverage/",
