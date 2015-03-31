@@ -43,7 +43,7 @@ var cssLintPlugin = function(options) {
   // Read CSSLint options from a specified csslintrc file.
   if (typeof options === 'string') {
     // Don't catch readFile errors, let them bubble up
-    var externalOptions = fs.readFileSync('./'+options);
+    var externalOptions = fs.readFileSync(options);
 
     try {
       options = JSON.parse(externalOptions);
