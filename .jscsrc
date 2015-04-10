@@ -1,0 +1,17 @@
+{
+  "validateIndentation": 2,
+  "requireSpacesInFunctionExpression": {
+    "beforeOpeningCurlyBrace": true
+  },
+  "disallowQuotedKeysInObjects": true,
+  "disallowPaddingNewlinesInBlocks": true,
+  "disallowSpacesInFunctionExpression": {
+    "beforeOpeningRoundBrace": true
+  },
+  "disallowMultipleLineStrings": true,
+  "disallowMultipleLineBreaks": true,
+  "disallowMultipleSpaces": true,
+  "requireLineFeedAtFileEnd": true,
+  "requireSemicolons": true,
+  "maximumLineLength": 120
+}

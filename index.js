@@ -53,7 +53,7 @@ var cssLintPlugin = function(options) {
     if (file.isNull()) return cb(null, file); // pass along
     if (file.isStream()) return cb(new error('gulp-csslint: Streaming not supported'));
 
-    rcLoader.for(file.path, function (err, opts) {
+    rcLoader.for(file.path, function(err, opts) {
       if (err) return cb(err);
 
       var str = file.contents.toString('utf8');
@@ -122,8 +122,8 @@ cssLintPlugin.reporter = function(customReporter) {
   });
 };
 
-cssLintPlugin.failReporter = function(){
-  return es.map(function (file, cb) {
+cssLintPlugin.failReporter = function() {
+  return es.map(function(file, cb) {
     // Nothing to report or no errors
     if (!file.csslint || file.csslint.success) {
       return cb(null, file);
