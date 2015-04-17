@@ -89,6 +89,24 @@ gulp.task('lint', function() {
 });
 ```
 
+## Custom Rules
+
+The plugin exposes the csslint `addRule` method which allows you to define custom rules that are run in addition to the included rules. [Creating your own rules](https://github.com/CSSLint/csslint/wiki/Working-with-Rules) works exactly like when using csslint directly.
+
+```javascript
+var csslint = require(‘gulp-csslint’);
+
+csslint.addRule({
+	// rule object
+});
+
+gulp.task(‘lint’, function() {
+  gulp.files('lib/*.css')
+    .pipe(csslint())
+    .pipe(csslint.reporter())
+});
+```
+
 ## Fail on errors
 
 Pipe the file stream to `csslint.failReporter()` to fail on errors.
