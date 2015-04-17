@@ -8,22 +8,22 @@
   ],
   "dependencies": {
     "csslint": "^0.10.0",
-    "event-stream": "^3.3.0",
+    "event-stream": "^3.3.1",
     "gulp-util": "^3.0.4",
     "rcloader": "^0.1.4"
   },
   "devDependencies": {
     "coveralls": "^2.11.2",
-    "istanbul": "^0.3.13",
-    "jscs": "^1.12.0",
-    "jshint": "^2.6.3",
-    "mocha": "^2.2.4",
-    "rimraf": "^2.3.2",
-    "should": "^5.2.0"
+    "istanbul": "^0.3.14",
+    "jscs": "^1.13.1",
+    "jshint": "^2.7.0",
+    "mocha": "^2.2.5",
+    "rimraf": "^2.3.4",
+    "should": "^6.0.3"
   },
   "scripts": {
     "clean": "rimraf coverage/",
-    "lint": "jscs index.js test/ & jshint index.js test/",
+    "lint": "jscs index.js test/ && jshint index.js test/",
     "pretest": "npm run lint",
     "test": "mocha",
     "precover": "npm run lint && npm run clean",
