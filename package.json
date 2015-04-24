@@ -3,6 +3,9 @@
   "version": "0.1.5",
   "description": "CSSLint plugin for gulp",
   "main": "index.js",
+  "files": [
+    "index.js"
+  ],
   "dependencies": {
     "csslint": "^0.10.0",
     "event-stream": "^3.3.0",
