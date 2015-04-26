@@ -24,8 +24,10 @@
   "scripts": {
     "clean": "rimraf coverage/",
     "lint": "jscs index.js test/ & jshint index.js test/",
-    "pretest": "npm run clean && npm run lint",
-    "test": "istanbul cover _mocha"
+    "pretest": "npm run lint",
+    "test": "mocha",
+    "precover": "npm run lint && npm run clean",
+    "cover": "istanbul cover _mocha"
   },
   "repository": {
     "type": "git",
