@@ -173,5 +173,55 @@ describe('gulp-csslint', function() {
       stream.write(file);
       stream.end();
     });
+
+    it('should report added rule linting', function(done) {
+      var a = 0;
+
+      var file = getFile('fixtures/addRule.css');
+      cssLintPlugin.addRule({
+        id: 'oocss',
+        name: 'OOCSS',
+        desc: 'Class names must follow pattern',
+        browsers: 'All',
+
+        //initialization
+        init: function(parser, reporter) {
+          'use strict';
+          var rule = this;
+          parser.addListener('startrule', function(event) {
+            var line = event.line,
+                col = event.col;
+
+            for (var i=0,len=event.selectors.length; i < len; i++) {
+              var selectors = event.selectors[i].text.split(/(?=\.)/);
+              for (var s=0,l=selectors.length; s < l; s++){
+                var selector = selectors[s].trim();
+                if(selector.charAt(0) !== '.'){
+                  return;
+                }
+                if(!selector.match(/^\.(_)?(o|c|u|is|has|js|qa)-[a-z0-9]+$/)){
+                  reporter.warn('Bad naming: '+selector, line, col, rule);
+                }
+              }
+            }
+          });
+        }
+      });
+
+      var stream = cssLintPlugin();
+      stream.on('data', function(newFile) {
+        ++a;
+        should.exist(newFile.csslint.success);
+        newFile.csslint.success.should.equal(false);
+        should.exist(newFile.csslint.results);
+      });
+      stream.once('end', function() {
+        a.should.equal(1);
+        done();
+      });
+
+      stream.write(file);
+      stream.end();
+    });
   });
 });

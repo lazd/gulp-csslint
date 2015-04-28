@@ -122,6 +122,13 @@ cssLintPlugin.reporter = function(customReporter) {
   });
 };
 
+cssLintPlugin.addRule = function(rule) {
+  if(typeof rule !== 'object') {
+    throw new Error('Invalid rule: rules need to be objects.');
+  }
+  csslint.addRule(rule);
+};
+
 cssLintPlugin.failReporter = function() {
   return es.map(function(file, cb) {
     // Nothing to report or no errors
