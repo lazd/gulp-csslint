@@ -5,6 +5,7 @@
   },
   "disallowQuotedKeysInObjects": true,
   "disallowPaddingNewlinesInBlocks": true,
+  "disallowNewlineBeforeBlockStatements": true,
   "disallowSpacesInFunctionExpression": {
     "beforeOpeningRoundBrace": true
   },

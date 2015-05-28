@@ -92,7 +92,7 @@ describe('gulp-csslint', function() {
       var file2 = getFile('fixtures/missingPrefixes.css');
 
       var stream = cssLintPlugin();
-      stream.on('data', function(newFile) {
+      stream.on('data', function() {
         ++a;
       });
 

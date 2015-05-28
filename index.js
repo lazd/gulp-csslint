@@ -6,7 +6,6 @@ var gutil = require('gulp-util');
 var c = gutil.colors;
 var error = gutil.PluginError;
 var es = require('event-stream');
-var fs = require('fs');
 var csslint = require('csslint').CSSLint;
 var RcLoader = require('rcloader');
 
