@@ -14,9 +14,11 @@
   },
   "devDependencies": {
     "coveralls": "^2.11.2",
+    "eslint": "^1.1.0",
+    "eslint-config-semistandard": "^5.0.0",
+    "eslint-config-standard": "^4.1.0",
+    "eslint-plugin-standard": "^1.2.0",
     "istanbul": "^0.3.14",
-    "jscs": "^1.13.1",
-    "jshint": "^2.7.0",
     "mocha": "^2.2.5",
     "rimraf": "^2.3.4",
     "should": "^7.0.3",
@@ -24,19 +26,19 @@
   },
   "scripts": {
     "clean": "rimraf coverage/",
-    "lint": "jscs index.js test/ && jshint index.js test/",
-    "pretest": "npm run lint",
-    "test": "mocha",
+    "cover": "istanbul cover _mocha",
+    "lint": "eslint index.js test/main.js",
     "precover": "npm run lint && npm run clean",
-    "cover": "istanbul cover _mocha"
+    "pretest": "npm run lint",
+    "test": "mocha"
   },
   "repository": {
     "type": "git",
     "url": "git://github.com/lazd/gulp-csslint.git"
   },
   "keywords": [
-    "gulpplugin",
-    "csslint"
+    "csslint",
+    "gulpplugin"
   ],
   "author": "Larry Davis <lazdnet@gmail.com>",
   "license": "MIT",
