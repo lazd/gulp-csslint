@@ -223,5 +223,25 @@ describe('gulp-csslint', function() {
       stream.write(file);
       stream.end();
     });
+
+    it('should not fail on empty files', function(done) {
+      var a = 0;
+
+      var file = getFile('fixtures/empty.css');
+
+      var stream = cssLintPlugin();
+
+      stream.on('data', function(newFile) {
+        ++a;
+        should.not.exist(newFile.csslint);
+      });
+      stream.once('end', function() {
+        a.should.equal(1);
+        done();
+      });
+
+      stream.write(file);
+      stream.end();
+    });
   });
 });
