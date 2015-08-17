@@ -17,6 +17,11 @@ var getFile = function(filePath) {
   });
 };
 
+var getContents = function(filePath) {
+  filePath = 'test/'+filePath;
+  return fs.readFileSync(filePath, 'utf8');
+};
+
 describe('gulp-csslint', function() {
   describe('cssLintPlugin()', function() {
     it('should pass file through', function(done) {
@@ -246,10 +251,11 @@ describe('gulp-csslint', function() {
       stream.end();
     });
 
-    it('should use built-in formatter', sinon.test(function(done) {
+    it('should support built-in CSSLint formatters', sinon.test(function(done) {
       var a = 0;
 
       var file = getFile('fixtures/usingImportant.css');
+      var expected = getContents('expected/checkstyle-xml.xml');
 
       var lintStream = cssLintPlugin();
       var reporterStream = cssLintPlugin.reporter('checkstyle-xml');
@@ -268,11 +274,8 @@ describe('gulp-csslint', function() {
 
       reporterStream.once('end', function() {
         a.should.equal(1);
-        sinon.assert.calledOnce(gutil.log, 'asdasd');
-        sinon.assert.calledWith(gutil.log, '<?xml version="1.0" encoding="utf-8"?><checkstyle><file ' +
-          'name="test/fixtures/usingImportant.css"><error line="2" column="1" severity="warning" ' +
-          'message="Bad naming: .mybox" source="net.csslint.OOCSS"/><error line="3" column="3" severity="warning" ' +
-          'message="Use of !important" source="net.csslint.Disallow!important"/></file></checkstyle>');
+        sinon.assert.calledOnce(gutil.log);
+        sinon.assert.calledWith(gutil.log, expected);
 
         gutil.log.restore();
         done();
