@@ -113,7 +113,7 @@ csslint.addRule({
 	// rule information
 });
 
-gulp.task(‘lint’, function() {
+gulp.task('lint', function() {
   gulp.files('lib/*.css')
     .pipe(csslint())
     .pipe(csslint.reporter())
