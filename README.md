@@ -79,7 +79,7 @@ gulp.task('lint', function() {
     .pipe(csslint.reporter('junit-xml'));
 ```
 
-### Custom Reporters
+### Custom reporters
 
 Custom reporter functions can be passed as `csslint.reporter(reporterFunc)`. The reporter function will be called for each linted file and passed the file object as described above.
 
@@ -102,7 +102,7 @@ gulp.task('lint', function() {
 });
 ```
 
-## Custom Rules
+## Custom rules
 
 Use the `csslint.addRule(rule)` method to define custom rules that run in addition to the rules defined in the csslintrc file. See [Working with Rules](https://github.com/CSSLint/csslint/wiki/Working-with-Rules) for details.
 
