@@ -33,7 +33,7 @@ var formatOutput = function(report, file, options) {
 };
 
 var cssLintPlugin = function(options) {
-  if (!options) options = {};
+  options = options || {};
 
   var ruleset = {};
 
@@ -76,12 +76,15 @@ var cssLintPlugin = function(options) {
 };
 
 cssLintPlugin.reporter = function(customReporter) {
-  var reporter = csslint.getFormatter('text'), builtInReporter = true, output;
+  var reporter = csslint.getFormatter('text');
+  var builtInReporter = true;
+  var output;
 
   if (typeof customReporter === 'function') {
     reporter = customReporter;
     builtInReporter = false;
-  } else if (typeof customReporter === 'string') {
+  }
+  else if (typeof customReporter === 'string') {
     if (customReporter === 'fail') {
       return cssLintPlugin.failReporter();
     }
@@ -97,26 +100,30 @@ cssLintPlugin.reporter = function(customReporter) {
     output = reporter.startFormat();
   }
 
-  return through.obj(function(file, enc, cb) {
-    // Only report if CSSLint was ran and errors were found
-    if (file.csslint && !file.csslint.success) {
-      if (builtInReporter) {
-        output += reporter.formatResults(file.csslint.originalReport, file.path);
-      } else {
-        reporter(file);
+  return through.obj(
+    function(file, enc, cb) {
+      // Only report if CSSLint was ran and errors were found
+      if (file.csslint && !file.csslint.success) {
+        if (builtInReporter) {
+          output += reporter.formatResults(file.csslint.originalReport, file.path);
+        }
+        else {
+          reporter(file);
+        }
       }
+
+      return cb(null, file);
+    },
+    function(cb) {
+      if (builtInReporter) {
+        output += reporter.endFormat();
+
+        gutil.log(output);
+      }
+
+      return cb();
     }
-
-    return cb(null, file);
-  }, function(cb) {
-    if (builtInReporter) {
-      output += reporter.endFormat();
-
-      gutil.log(output);
-    }
-
-    return cb();
-  });
+  );
 };
 
 cssLintPlugin.addRule = function(rule) {
