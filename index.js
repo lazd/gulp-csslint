@@ -1,7 +1,6 @@
 'use strict';
 
 var gutil = require('gulp-util');
-var error = gutil.PluginError;
 var through = require('through2');
 var csslint = require('csslint').CSSLint;
 var RcLoader = require('rcloader');
@@ -46,7 +45,7 @@ var cssLintPlugin = function(options) {
 
   return through.obj(function(file, enc, cb) {
     if (file.isNull()) return cb(null, file); // pass along
-    if (file.isStream()) return cb(new error('gulp-csslint: Streaming not supported'), file);
+    if (file.isStream()) return cb(new gutil.PluginError('gulp-csslint: Streaming not supported'), file);
 
     var content = file.contents.toString(enc);
 
@@ -127,7 +126,7 @@ cssLintPlugin.reporter = function(customReporter) {
 };
 
 cssLintPlugin.addRule = function(rule) {
-  if(typeof rule !== 'object') {
+  if (typeof rule !== 'object') {
     throw new Error('Invalid rule: rules need to be objects.');
   }
   csslint.addRule(rule);
@@ -140,7 +139,7 @@ cssLintPlugin.failReporter = function() {
       return cb(null, file);
     }
 
-    return cb(new gutil.PluginError('gulp-csslint', 'CSSLint failed for '+file.relative), file);
+    return cb(new gutil.PluginError('gulp-csslint', 'CSSLint failed for ' + file.relative), file);
   });
 };
 

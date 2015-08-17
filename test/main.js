@@ -1,4 +1,4 @@
-/*jshint expr: true*/
+/* eslint-env mocha */
 
 var cssLintPlugin = require('../');
 var should = require('should');
@@ -8,7 +8,7 @@ var path = require('path');
 var sinon = require('sinon');
 
 var getFile = function(filePath) {
-  filePath = 'test/'+filePath;
+  filePath = 'test/' + filePath;
   return new gutil.File({
     path: filePath,
     cwd: 'test/',
@@ -18,7 +18,7 @@ var getFile = function(filePath) {
 };
 
 var getContents = function(filePath) {
-  filePath = 'test/'+filePath;
+  filePath = 'test/' + filePath;
   return fs.readFileSync(filePath, 'utf8');
 };
 
@@ -191,23 +191,23 @@ describe('gulp-csslint', function() {
         desc: 'Class names must follow pattern',
         browsers: 'All',
 
-        //initialization
+        // initialization
         init: function(parser, reporter) {
           'use strict';
           var rule = this;
           parser.addListener('startrule', function(event) {
-            var line = event.line,
-                col = event.col;
+            var line = event.line;
+            var col = event.col;
 
-            for (var i=0,len=event.selectors.length; i < len; i++) {
+            for (var i = 0, len = event.selectors.length; i < len; i++) {
               var selectors = event.selectors[i].text.split(/(?=\.)/);
-              for (var s=0,l=selectors.length; s < l; s++){
+              for (var s = 0, l = selectors.length; s < l; s++) {
                 var selector = selectors[s].trim();
-                if(selector.charAt(0) !== '.'){
+                if (selector.charAt(0) !== '.') {
                   return;
                 }
-                if(!selector.match(/^\.(_)?(o|c|u|is|has|js|qa)-[a-z0-9]+$/)){
-                  reporter.warn('Bad naming: '+selector, line, col, rule);
+                if (!selector.match(/^\.(_)?(o|c|u|is|has|js|qa)-[a-z0-9]+$/)) {
+                  reporter.warn('Bad naming: ' + selector, line, col, rule);
                 }
               }
             }

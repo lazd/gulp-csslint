@@ -1,6 +1,0 @@
-{
-  "node": true,
-  "latedef": true,
-  "undef": true,
-  "unused": true
-}
