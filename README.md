@@ -11,7 +11,7 @@ npm install --save-dev gulp-csslint
 
 Then, add it to your `gulpfile.js`:
 
-```javascript
+```js
 var csslint = require('gulp-csslint');
 
 gulp.task('css', function() {
@@ -34,7 +34,7 @@ You can pass rule configuration as an object. See the [list of rules by ID on th
 
 Any properties passed wil be in _addition_ to (or overwriting) the ones in .csslintrc (unless `lookup: false` is passed).
 
-```javascript
+```js
 gulp.src('client/css/*.css')
   .pipe(csslint({
     'shorthand': false
@@ -49,7 +49,7 @@ Type: `String`
 
 You can also pass the path to your csslintrc file instead of a rule configuration object.
 
-```javascript
+```js
 gulp.src('client/css/*.css')
   .pipe(csslint('csslintrc.json'))
   .pipe(csslint.reporter());
@@ -59,7 +59,7 @@ gulp.src('client/css/*.css')
 
 Adds the following properties to the file object:
 
-```javascript
+```js
 file.csslint.success = true; // or false
 file.csslint.errorCount = 0; // number of errors returned by CSSLint
 file.csslint.results = []; // CSSLint errors
@@ -70,7 +70,7 @@ file.csslint.opt = {}; // The options you passed to CSSLint
 
 Custom reporter functions can be passed as `csslint.reporter(reporterFunc)`. The reporter function will be called for each linted file and passed the file object as described above.
 
-```javascript
+```js
 var csslint = require('gulp-csslint');
 var gutil = require('gulp-util');
 
@@ -91,13 +91,13 @@ gulp.task('lint', function() {
 
 ## Custom Rules
 
-The plugin exposes the csslint `addRule` method which allows you to define custom rules that are run in addition to the included rules. [Creating your own rules](https://github.com/CSSLint/csslint/wiki/Working-with-Rules) works exactly like when using csslint directly.
+Use the `csslint.addRule(rule)` method to define custom rules that run in addition to the rules defined in the csslintrc file. See [Working with Rules](https://github.com/CSSLint/csslint/wiki/Working-with-Rules) for details.
 
-```javascript
-var csslint = require(‘gulp-csslint’);
+```js
+var csslint = require('gulp-csslint');
 
 csslint.addRule({
-	// rule object
+	// rule information
 });
 
 gulp.task(‘lint’, function() {
@@ -111,7 +111,7 @@ gulp.task(‘lint’, function() {
 
 Pipe the file stream to `csslint.failReporter()` to fail on errors.
 
-```javascript
+```js
 var csslint = require('gulp-csslint');
 
 gulp.task('lint', function() {
