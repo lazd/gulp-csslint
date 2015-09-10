@@ -71,10 +71,14 @@ var cssLintPlugin = function(options) {
   });
 };
 
-cssLintPlugin.reporter = function(customReporter) {
+cssLintPlugin.reporter = function(customReporter, options) {
   var reporter = csslint.getFormatter('text');
   var builtInReporter = true;
   var output;
+
+  options = options || {};
+
+  var logger = options.logger || process.stdout.write.bind(process.stdout);
 
   if (typeof customReporter === 'function') {
     reporter = customReporter;
@@ -101,7 +105,7 @@ cssLintPlugin.reporter = function(customReporter) {
       // Only report if CSSLint was ran and errors were found
       if (file.csslint && !file.csslint.success) {
         if (builtInReporter) {
-          output.push(reporter.formatResults(file.csslint.originalReport, file.path));
+          output.push(reporter.formatResults(file.csslint.originalReport, file.path, options));
         }
         else {
           reporter(file);
@@ -111,14 +115,14 @@ cssLintPlugin.reporter = function(customReporter) {
       return cb(null, file);
     },
     function(cb) {
-      var report;
-
       if (builtInReporter) {
         output.push(reporter.endFormat());
-        report = output.join('');
 
-        // Only print report if the report is not empty
-        report && gutil.log(report);
+        output
+          .filter(function(str) {
+            return str;
+          })
+          .forEach(logger);
       }
 
       return cb();

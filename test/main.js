@@ -19,7 +19,7 @@ var getFile = function(filePath) {
 
 var getContents = function(filePath) {
   filePath = 'test/' + filePath;
-  return fs.readFileSync(filePath, 'utf8');
+  return fs.readFileSync(filePath, 'utf8').trim();
 };
 
 describe('gulp-csslint', function() {
@@ -276,14 +276,53 @@ describe('gulp-csslint', function() {
   });
 
   describe('cssLintPlugin.reporter()', function() {
-    it('should support built-in CSSLint formatters', sinon.test(function(done) {
+    it('should support built-in CSSLint formatters', function(done) {
       var a = 0;
+
+      var file = getFile('fixtures/usingImportant.css');
+      var expected = getContents('expected/checkstyle-xml.xml');
+      var callback = sinon.spy();
+
+      var lintStream = cssLintPlugin();
+      var reporterStream = cssLintPlugin.reporter('checkstyle-xml', {logger: callback});
+
+      reporterStream.on('data', function() {
+        ++a;
+      });
+      lintStream.on('data', function(file) {
+        reporterStream.write(file);
+      });
+      lintStream.once('end', function() {
+        reporterStream.end();
+      });
+
+      reporterStream.once('end', function() {
+        a.should.equal(1);
+        sinon.assert.calledThrice(callback);
+        callback.firstCall.args[0].should.equal('<?xml version="1.0" encoding="utf-8"?><checkstyle>');
+        callback.secondCall.args[0].should.equal(expected);
+        callback.thirdCall.args[0].should.equal('</checkstyle>');
+
+        done();
+      });
+
+      lintStream.write(file);
+      lintStream.end();
+    });
+
+    it('should write report to disk', function(done) {
+      var a = 0;
+      var output = '';
 
       var file = getFile('fixtures/usingImportant.css');
       var expected = getContents('expected/checkstyle-xml.xml');
 
       var lintStream = cssLintPlugin();
-      var reporterStream = cssLintPlugin.reporter('checkstyle-xml');
+      var reporterStream = cssLintPlugin.reporter('checkstyle-xml', {
+        logger: function(str) {
+          output += str;
+        }
+      });
 
       sinon.stub(gutil, 'log');
 
@@ -298,27 +337,35 @@ describe('gulp-csslint', function() {
       });
 
       reporterStream.once('end', function() {
-        a.should.equal(1);
-        sinon.assert.calledOnce(gutil.log);
-        sinon.assert.calledWith(gutil.log, expected);
+        fs.writeFile('test-output.xml', output, function() {
+          a.should.equal(1);
+          sinon.assert.notCalled(gutil.log);
 
-        gutil.log.restore();
-        done();
+          gutil.log.restore();
+
+          fs.readFile('test-output.xml', function(err, content) {
+            (err === null).should.be.true;
+
+            var toString = content.toString();
+
+            toString.should.equal('<?xml version="1.0" encoding="utf-8"?><checkstyle>' + expected + '</checkstyle>');
+            done();
+          });
+        });
       });
 
       lintStream.write(file);
       lintStream.end();
-    }));
+    });
 
-    it('should not print empty output by built-in CSSLint formatters', sinon.test(function(done) {
+    it('should not print empty output by built-in CSSLint formatters', function(done) {
       var a = 0;
 
       var file = getFile('fixtures/validCSS.css');
+      var callback = sinon.spy();
 
       var lintStream = cssLintPlugin();
-      var reporterStream = cssLintPlugin.reporter('text');
-
-      sinon.stub(gutil, 'log');
+      var reporterStream = cssLintPlugin.reporter('text', {logger: callback});
 
       reporterStream.on('data', function() {
         ++a;
@@ -333,15 +380,14 @@ describe('gulp-csslint', function() {
       });
 
       reporterStream.once('end', function() {
+        sinon.assert.notCalled(callback);
         a.should.equal(1);
-        sinon.assert.callCount(gutil.log, 0);
 
-        gutil.log.restore();
         done();
       });
 
       lintStream.write(file);
       lintStream.end();
-    }));
+    });
   });
 });

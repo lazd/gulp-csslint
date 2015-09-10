@@ -102,6 +102,56 @@ gulp.task('lint', function() {
 });
 ```
 
+### Reporter options
+You can also pass options to the built-in formatter, by passing a second option to `reporter`.
+
+```js
+gulp.task('lint', function() {
+  gulp.files('lib/*.css')
+    .pipe(csslint())
+    .pipe(csslint.reporter('junit-xml', options));
+});
+```
+
+See the documentation for the formatters regarding what options they support.
+
+This plugin supports one option outside of that, called `logger`, allowing you to specify how to log out the report.
+Default is using `process.stdout.write`, but you can use e.g. `console.log`, or `gutil.log`.
+
+```js
+gulp.task('lint', function() {
+  gulp.files('lib/*.css')
+    .pipe(csslint())
+    .pipe(csslint.reporter('junit-xml', {logger: console.log.bind(console)}));
+});
+```
+
+```js
+gulp.task('lint', function() {
+  gulp.files('lib/*.css')
+    .pipe(csslint())
+    .pipe(csslint.reporter('junit-xml', {logger: gutil.log.bind(null, 'gulp-csslint:')}));
+});
+```
+
+`logger` is called once for the starting format of the reporter, then once for each file containing violations, then
+lastly once for the ending format. Instead of writing to `stdout`, you can write to file using this option.
+
+```js
+gulp.task('lint', function(cb) {
+  var fs = require('fs');
+  var output = '';
+
+  gulp.files('lib/*.css')
+    .pipe(csslint())
+    .pipe(csslint.reporter('junit-xml', {logger: function(str) { output += str; }}));
+
+  fs.writeFile('some/path/junit.xml', output, cb);
+});
+```
+
+This functionality is only available when not using custom reporters.
+
 ## Custom rules
 
 Use the `csslint.addRule(rule)` method to define custom rules that run in addition to the rules defined in the csslintrc file. See [Working with Rules](https://github.com/CSSLint/csslint/wiki/Working-with-Rules) for details.
