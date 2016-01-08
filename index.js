@@ -116,8 +116,9 @@ cssLintPlugin.reporter = function(customReporter) {
     function(cb) {
       if (builtInReporter) {
         output += reporter.endFormat();
-
-        gutil.log(output);
+        if (output) {
+          gutil.log(output);
+        }
       }
 
       return cb();
