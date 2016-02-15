@@ -96,7 +96,7 @@ cssLintPlugin.reporter = function(customReporter) {
   }
 
   if (builtInReporter) {
-    output = reporter.startFormat();
+    output = [reporter.startFormat()];
   }
 
   return through.obj(
@@ -104,7 +104,7 @@ cssLintPlugin.reporter = function(customReporter) {
       // Only report if CSSLint was ran and errors were found
       if (file.csslint && !file.csslint.success) {
         if (builtInReporter) {
-          output += reporter.formatResults(file.csslint.originalReport, file.path);
+          output.push(reporter.formatResults(file.csslint.originalReport, file.path));
         }
         else {
           reporter(file);
@@ -114,10 +114,14 @@ cssLintPlugin.reporter = function(customReporter) {
       return cb(null, file);
     },
     function(cb) {
-      if (builtInReporter) {
-        output += reporter.endFormat();
+      var report;
 
-        gutil.log(output);
+      if (builtInReporter) {
+        output.push(reporter.endFormat());
+        report = output.join('');
+
+        // Only print report if the report is not empty
+        report && gutil.log(report);
       }
 
       return cb();
