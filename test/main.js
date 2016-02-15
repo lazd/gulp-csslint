@@ -250,7 +250,9 @@ describe('gulp-csslint', function() {
       stream.write(file);
       stream.end();
     });
+  });
 
+  describe('cssLintPlugin.reporter()', function() {
     it('should support built-in CSSLint formatters', sinon.test(function(done) {
       var a = 0;
 
@@ -276,6 +278,40 @@ describe('gulp-csslint', function() {
         a.should.equal(1);
         sinon.assert.calledOnce(gutil.log);
         sinon.assert.calledWith(gutil.log, expected);
+
+        gutil.log.restore();
+        done();
+      });
+
+      lintStream.write(file);
+      lintStream.end();
+    }));
+
+    it('should not print empty output by built-in CSSLint formatters', sinon.test(function(done) {
+      var a = 0;
+
+      var file = getFile('fixtures/validCSS.css');
+
+      var lintStream = cssLintPlugin();
+      var reporterStream = cssLintPlugin.reporter('text');
+
+      sinon.stub(gutil, 'log');
+
+      reporterStream.on('data', function() {
+        ++a;
+      });
+      lintStream.on('data', function(newFile) {
+        should.exist(newFile.csslint.success);
+        newFile.csslint.success.should.equal(true);
+        reporterStream.write(newFile);
+      });
+      lintStream.once('end', function() {
+        reporterStream.end();
+      });
+
+      reporterStream.once('end', function() {
+        a.should.equal(1);
+        sinon.assert.callCount(gutil.log, 0);
 
         gutil.log.restore();
         done();
