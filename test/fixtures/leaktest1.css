@@ -1,0 +1,6 @@
+/*csslint duplicate-properties:false*/
+.no-leak-1{
+  height: 42px;
+  width: 20px;
+  height: 21px;
+}

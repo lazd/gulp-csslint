@@ -113,6 +113,29 @@ describe('gulp-csslint', function() {
       stream.end();
     });
 
+    it('should not leak options across files', function(done) {
+      var failedFiles = 0;
+      var file1 = getFile('fixtures/leaktest1.css');
+      var file2 = getFile('fixtures/leaktest2.css');
+      var stream = cssLintPlugin({});
+
+      stream.on('data', function(newFile) {
+        should.exist(newFile.csslint.success);
+        if (!newFile.csslint.success) {
+          failedFiles++;
+        }
+      });
+
+      stream.once('end', function() {
+        failedFiles.should.equal(1);
+        done();
+      });
+
+      stream.write(file1);
+      stream.write(file2);
+      stream.end();
+    });
+
     it('should support options', function(done) {
       var a = 0;
 

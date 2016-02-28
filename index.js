@@ -33,19 +33,16 @@ var formatOutput = function(report, file, options) {
 
 var cssLintPlugin = function(options) {
   options = options || {};
-
-  var ruleset = {};
-
   var rcLoader = new RcLoader('.csslintrc', options, { loader: 'async' });
-
-  // Build a list of all available rules
-  csslint.getRules().forEach(function(rule) {
-    ruleset[rule.id] = 1;
-  });
-
   return through.obj(function(file, enc, cb) {
     if (file.isNull()) return cb(null, file); // pass along
     if (file.isStream()) return cb(new gutil.PluginError('gulp-csslint: Streaming not supported'), file);
+
+    var ruleset = {};
+    // Build a list of all available rules
+    csslint.getRules().forEach(function(rule) {
+      ruleset[rule.id] = 1;
+    });
 
     var content = file.contents.toString(enc);
 
