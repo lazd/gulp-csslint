@@ -4,3 +4,4 @@
 *.iml
 
 coverage/
+test-output.xml
