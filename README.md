@@ -74,7 +74,7 @@ For a list of all reporters supported by `csslint`, see the [csslint wiki](https
 
 ```js
 gulp.task('lint', function() {
-  gulp.files('lib/*.css')
+  gulp.src('lib/*.css')
     .pipe(csslint())
     .pipe(csslint.reporter('junit-xml'));
 ```
@@ -96,7 +96,7 @@ var customReporter = function(file) {
 };
 
 gulp.task('lint', function() {
-  gulp.files('lib/*.css')
+  gulp.src('lib/*.css')
     .pipe(csslint())
     .pipe(csslint.reporter(customReporter));
 });
@@ -107,7 +107,7 @@ You can also pass options to the built-in formatter, by passing a second option 
 
 ```js
 gulp.task('lint', function() {
-  gulp.files('lib/*.css')
+  gulp.src('lib/*.css')
     .pipe(csslint())
     .pipe(csslint.reporter('junit-xml', options));
 });
@@ -120,7 +120,7 @@ Default is using `process.stdout.write`, but you can use e.g. `console.log`, or 
 
 ```js
 gulp.task('lint', function() {
-  gulp.files('lib/*.css')
+  gulp.src('lib/*.css')
     .pipe(csslint())
     .pipe(csslint.reporter('junit-xml', {logger: console.log.bind(console)}));
 });
@@ -128,7 +128,7 @@ gulp.task('lint', function() {
 
 ```js
 gulp.task('lint', function() {
-  gulp.files('lib/*.css')
+  gulp.src('lib/*.css')
     .pipe(csslint())
     .pipe(csslint.reporter('junit-xml', {logger: gutil.log.bind(null, 'gulp-csslint:')}));
 });
@@ -142,7 +142,7 @@ gulp.task('lint', function(cb) {
   var fs = require('fs');
   var output = '';
 
-  gulp.files('lib/*.css')
+  gulp.src('lib/*.css')
     .pipe(csslint())
     .pipe(csslint.reporter('junit-xml', {logger: function(str) { output += str; }}));
 
@@ -160,11 +160,11 @@ Use the `csslint.addRule(rule)` method to define custom rules that run in additi
 var csslint = require('gulp-csslint');
 
 csslint.addRule({
-	// rule information
+  // rule information
 });
 
 gulp.task('lint', function() {
-  gulp.files('lib/*.css')
+  gulp.src('lib/*.css')
     .pipe(csslint())
     .pipe(csslint.reporter())
 });
@@ -178,7 +178,7 @@ Pipe the file stream to `csslint.failReporter()` to fail on errors.
 var csslint = require('gulp-csslint');
 
 gulp.task('lint', function() {
-  gulp.files('lib/*.css')
+  gulp.src('lib/*.css')
     .pipe(csslint())
     .pipe(csslint.reporter()) // Display errors
     .pipe(csslint.reporter('fail')); // Fail on error (or csslint.failReporter())
