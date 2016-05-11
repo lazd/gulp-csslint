@@ -144,9 +144,12 @@ gulp.task('lint', function(cb) {
 
   gulp.src('lib/*.css')
     .pipe(csslint())
-    .pipe(csslint.reporter('junit-xml', {logger: function(str) { output += str; }}));
+    .pipe(csslint.reporter('junit-xml', {logger: function(str) { output += str; }}))
+    .on('end', function(err) {
+      if (err) return cb(err);
 
-  fs.writeFile('some/path/junit.xml', output, cb);
+      fs.writeFile('some/path/junit.xml', output, cb);
+    });
 });
 ```
 
