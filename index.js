@@ -127,7 +127,7 @@ cssLintPlugin.reporter = function(customReporter, options) {
 
       return cb();
     }
-  );
+  ).resume(); // Force flow-mode https://nodejs.org/docs/latest/api/stream.html#stream_event_end
 };
 
 cssLintPlugin.addRule = function(rule) {
