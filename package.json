@@ -1,6 +1,6 @@
 {
   "name": "gulp-csslint",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "CSSLint plugin for gulp",
   "main": "index.js",
   "files": [
