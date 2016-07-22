@@ -8,22 +8,23 @@
   ],
   "dependencies": {
     "csslint": "^0.10.0",
-    "gulp-util": "^3.0.4",
-    "rcloader": "^0.1.4",
-    "through2": "^2.0.0"
+    "gulp-util": "^3.0.7",
+    "rcloader": "^0.2.1",
+    "through2": "^2.0.1"
   },
   "devDependencies": {
-    "coveralls": "^2.11.2",
+    "coveralls": "^2.11.12",
     "csslint-stylish": "0.0.4",
-    "eslint": "^1.1.0",
-    "eslint-config-semistandard": "^5.0.0",
-    "eslint-config-standard": "^4.1.0",
-    "eslint-plugin-standard": "^1.2.0",
-    "istanbul": "^0.3.14",
-    "mocha": "^2.2.5",
-    "rimraf": "^2.3.4",
-    "should": "^7.0.3",
-    "sinon": "^1.15.4"
+    "eslint": "^3.2.2",
+    "eslint-config-semistandard": "^7.0.0-beta.0",
+    "eslint-config-standard": "^6.0.0-beta.2",
+    "eslint-plugin-promise": "^2.0.1",
+    "eslint-plugin-standard": "^2.0.0",
+    "istanbul": "^0.4.4",
+    "mocha": "^3.0.2",
+    "rimraf": "^2.5.4",
+    "should": "^11.0.0",
+    "sinon": "^1.17.5"
   },
   "scripts": {
     "clean": "rimraf coverage/",
