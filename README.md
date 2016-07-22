@@ -17,7 +17,7 @@ var csslint = require('gulp-csslint');
 gulp.task('css', function() {
   gulp.src('client/css/*.css')
     .pipe(csslint())
-    .pipe(csslint.reporter());
+    .pipe(csslint.formatter());
 });
 ```
 
@@ -39,7 +39,7 @@ gulp.src('client/css/*.css')
   .pipe(csslint({
     'shorthand': false
   }))
-  .pipe(csslint.reporter());
+  .pipe(csslint.formatter());
 ```
 
 ### csslint(csslintrc)
@@ -52,7 +52,7 @@ You can also pass the path to your csslintrc file instead of a rule configuratio
 ```js
 gulp.src('client/css/*.css')
   .pipe(csslint('csslintrc.json'))
-  .pipe(csslint.reporter());
+  .pipe(csslint.formatter());
 ```
 
 ## Results
@@ -66,28 +66,28 @@ file.csslint.results = []; // CSSLint errors
 file.csslint.opt = {}; // The options you passed to CSSLint
 ```
 
-## Using reporters
+## Using formatters
 
-Several reporters come built-in to css-lint. To use one of these reporters, pass the name to `csslint.reporter`.
+Several formatters come built-in to CSSLint. To use one of these formatters, pass the name to `csslint.formatter`.
 
-For a list of all reporters supported by `csslint`, see the [csslint wiki](https://github.com/CSSLint/csslint/wiki/Command-line-interface#--format).
+For a list of all formatters supported by `csslint`, see the [csslint wiki](https://github.com/CSSLint/csslint/wiki/Command-line-interface#--format).
 
 ```js
 gulp.task('lint', function() {
   gulp.src('lib/*.css')
     .pipe(csslint())
-    .pipe(csslint.reporter('junit-xml'));
+    .pipe(csslint.formatter('junit-xml'));
 ```
 
-### Custom reporters
+### Custom formatters
 
-Custom reporter functions can be passed as `csslint.reporter(reporterFunc)`. The reporter function will be called for each linted file and passed the file object as described above.
+Custom formatter functions can be passed as `csslint.formatter(formatterFunc)`. The formatter function will be called for each linted file and passed the file object as described above.
 
 ```js
 var csslint = require('gulp-csslint');
 var gutil = require('gulp-util');
 
-var customReporter = function(file) {
+var customFormatter = function(file) {
   gutil.log(gutil.colors.cyan(file.csslint.errorCount)+' errors in '+gutil.colors.magenta(file.path));
 
   file.csslint.results.forEach(function(result) {
@@ -98,18 +98,18 @@ var customReporter = function(file) {
 gulp.task('lint', function() {
   gulp.src('lib/*.css')
     .pipe(csslint())
-    .pipe(csslint.reporter(customReporter));
+    .pipe(csslint.formatter(customFormatter));
 });
 ```
 
-### Reporter options
-You can also pass options to the built-in formatter, by passing a second option to `reporter`.
+### Formatter options
+You can also pass options to the built-in formatter, by passing a second option to `formatter`.
 
 ```js
 gulp.task('lint', function() {
   gulp.src('lib/*.css')
     .pipe(csslint())
-    .pipe(csslint.reporter('junit-xml', options));
+    .pipe(csslint.formatter('junit-xml', options));
 });
 ```
 
@@ -122,7 +122,7 @@ Default is using `process.stdout.write`, but you can use e.g. `console.log`, or 
 gulp.task('lint', function() {
   gulp.src('lib/*.css')
     .pipe(csslint())
-    .pipe(csslint.reporter('junit-xml', {logger: console.log.bind(console)}));
+    .pipe(csslint.formatter('junit-xml', {logger: console.log.bind(console)}));
 });
 ```
 
@@ -130,11 +130,11 @@ gulp.task('lint', function() {
 gulp.task('lint', function() {
   gulp.src('lib/*.css')
     .pipe(csslint())
-    .pipe(csslint.reporter('junit-xml', {logger: gutil.log.bind(null, 'gulp-csslint:')}));
+    .pipe(csslint.formatter('junit-xml', {logger: gutil.log.bind(null, 'gulp-csslint:')}));
 });
 ```
 
-`logger` is called once for the starting format of the reporter, then once for each file containing violations, then
+`logger` is called once for the starting format of the formatter, then once for each file containing violations, then
 lastly once for the ending format. Instead of writing to `stdout`, you can write to file using this option.
 
 ```js
@@ -144,7 +144,7 @@ gulp.task('lint', function(cb) {
 
   gulp.src('lib/*.css')
     .pipe(csslint())
-    .pipe(csslint.reporter('junit-xml', {logger: function(str) { output += str; }}))
+    .pipe(csslint.formatter('junit-xml', {logger: function(str) { output += str; }}))
     .on('end', function(err) {
       if (err) return cb(err);
 
@@ -153,7 +153,7 @@ gulp.task('lint', function(cb) {
 });
 ```
 
-This functionality is only available when not using custom reporters.
+This functionality is only available when not using custom formatters.
 
 ## Custom rules
 
@@ -169,13 +169,13 @@ csslint.addRule({
 gulp.task('lint', function() {
   gulp.src('lib/*.css')
     .pipe(csslint())
-    .pipe(csslint.reporter())
+    .pipe(csslint.formatter())
 });
 ```
 
 ## Fail on errors
 
-Pipe the file stream to `csslint.failReporter()` to fail on errors.
+Pipe the file stream to `csslint.failFormatter()` to fail on errors.
 
 ```js
 var csslint = require('gulp-csslint');
@@ -183,8 +183,8 @@ var csslint = require('gulp-csslint');
 gulp.task('lint', function() {
   gulp.src('lib/*.css')
     .pipe(csslint())
-    .pipe(csslint.reporter()) // Display errors
-    .pipe(csslint.reporter('fail')); // Fail on error (or csslint.failReporter())
+    .pipe(csslint.formatter()) // Display errors
+    .pipe(csslint.formatter('fail')); // Fail on error (or csslint.failFormatter())
 });
 ```
 

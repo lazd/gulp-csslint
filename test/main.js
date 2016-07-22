@@ -215,7 +215,7 @@ describe('gulp-csslint', function() {
         browsers: 'All',
 
         // initialization
-        init: function(parser, reporter) {
+        init: function(parser, formatter) {
           'use strict';
           var rule = this;
           parser.addListener('startrule', function(event) {
@@ -230,7 +230,7 @@ describe('gulp-csslint', function() {
                   return;
                 }
                 if (!selector.match(/^\.(_)?(o|c|u|is|has|js|qa)-[a-z0-9]+$/)) {
-                  reporter.warn('Bad naming: ' + selector, line, col, rule);
+                  formatter.warn('Bad naming: ' + selector, line, col, rule);
                 }
               }
             }
@@ -275,7 +275,7 @@ describe('gulp-csslint', function() {
     });
   });
 
-  describe('cssLintPlugin.reporter()', function() {
+  describe('cssLintPlugin.formatter()', function() {
     it('should support built-in CSSLint formatters', function(done) {
       var a = 0;
 
@@ -284,19 +284,19 @@ describe('gulp-csslint', function() {
       var callback = sinon.spy();
 
       var lintStream = cssLintPlugin();
-      var reporterStream = cssLintPlugin.reporter('checkstyle-xml', {logger: callback});
+      var formatterStream = cssLintPlugin.formatter('checkstyle-xml', {logger: callback});
 
-      reporterStream.on('data', function() {
+      formatterStream.on('data', function() {
         ++a;
       });
       lintStream.on('data', function(file) {
-        reporterStream.write(file);
+        formatterStream.write(file);
       });
       lintStream.once('end', function() {
-        reporterStream.end();
+        formatterStream.end();
       });
 
-      reporterStream.once('end', function() {
+      formatterStream.once('end', function() {
         a.should.equal(1);
         sinon.assert.calledThrice(callback);
         callback.firstCall.args[0].should.equal('<?xml version="1.0" encoding="utf-8"?><checkstyle>');
@@ -318,7 +318,7 @@ describe('gulp-csslint', function() {
       var expected = getContents('expected/checkstyle-xml.xml');
 
       var lintStream = cssLintPlugin();
-      var reporterStream = cssLintPlugin.reporter('checkstyle-xml', {
+      var formatterStream = cssLintPlugin.formatter('checkstyle-xml', {
         logger: function(str) {
           output += str;
         }
@@ -326,17 +326,17 @@ describe('gulp-csslint', function() {
 
       sinon.stub(gutil, 'log');
 
-      reporterStream.on('data', function() {
+      formatterStream.on('data', function() {
         ++a;
       });
       lintStream.on('data', function(file) {
-        reporterStream.write(file);
+        formatterStream.write(file);
       });
       lintStream.once('end', function() {
-        reporterStream.end();
+        formatterStream.end();
       });
 
-      reporterStream.once('end', function() {
+      formatterStream.once('end', function() {
         fs.writeFile('test-output.xml', output, function() {
           a.should.equal(1);
           sinon.assert.notCalled(gutil.log);
@@ -365,21 +365,21 @@ describe('gulp-csslint', function() {
       var callback = sinon.spy();
 
       var lintStream = cssLintPlugin();
-      var reporterStream = cssLintPlugin.reporter('text', {logger: callback});
+      var formatterStream = cssLintPlugin.formatter('text', {logger: callback});
 
-      reporterStream.on('data', function() {
+      formatterStream.on('data', function() {
         ++a;
       });
       lintStream.on('data', function(newFile) {
         should.exist(newFile.csslint.success);
         newFile.csslint.success.should.equal(true);
-        reporterStream.write(newFile);
+        formatterStream.write(newFile);
       });
       lintStream.once('end', function() {
-        reporterStream.end();
+        formatterStream.end();
       });
 
-      reporterStream.once('end', function() {
+      formatterStream.once('end', function() {
         sinon.assert.notCalled(callback);
         a.should.equal(1);
 
