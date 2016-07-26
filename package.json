@@ -22,6 +22,7 @@
     "eslint-plugin-standard": "^2.0.0",
     "istanbul": "^0.4.4",
     "mocha": "^3.0.2",
+    "node-version-check": "^2.1.0",
     "rimraf": "^2.5.4",
     "should": "^11.0.0",
     "sinon": "^1.17.5"
@@ -29,7 +30,7 @@
   "scripts": {
     "clean": "rimraf coverage/",
     "cover": "istanbul cover _mocha",
-    "lint": "eslint index.js test/main.js",
+    "lint": "node-version-gte-4 && eslint index.js test/main.js || node-version-lt-4",
     "precover": "npm run lint && npm run clean",
     "pretest": "npm run lint",
     "test": "mocha"
