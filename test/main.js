@@ -1,6 +1,7 @@
 /* eslint-env mocha */
 
 var cssLintPlugin = require('../');
+var cssLint = require('csslint').CSSLint;
 var should = require('should');
 var gutil = require('gulp-util');
 var fs = require('fs');
@@ -81,7 +82,7 @@ describe('gulp-csslint', function() {
         ++a;
         should.exist(newFile.csslint.success);
         newFile.csslint.success.should.equal(false);
-        should.exist(newFile.csslint.results);
+        should.exist(newFile.csslint.report);
       });
       stream.once('end', function() {
         a.should.equal(1);
@@ -243,7 +244,7 @@ describe('gulp-csslint', function() {
         ++a;
         should.exist(newFile.csslint.success);
         newFile.csslint.success.should.equal(false);
-        should.exist(newFile.csslint.results);
+        should.exist(newFile.csslint.report);
       });
       stream.once('end', function() {
         a.should.equal(1);
@@ -272,6 +273,89 @@ describe('gulp-csslint', function() {
 
       stream.write(file);
       stream.end();
+    });
+
+    it('should default to text formatter', function(done) {
+      var a = 0;
+
+      var file = getFile('fixtures/usingImportant.css');
+      var expected = getContents('expected/text.txt').trim();
+      var callback = sinon.spy();
+
+      var lintStream = cssLintPlugin();
+      var formatterStream = cssLintPlugin.formatter(null, {logger: callback});
+
+      formatterStream.on('data', function() {
+        ++a;
+      });
+      lintStream.on('data', function(file) {
+        formatterStream.write(file);
+      });
+      lintStream.once('end', function() {
+        formatterStream.end();
+      });
+
+      formatterStream.once('end', function() {
+        a.should.equal(1);
+        sinon.assert.calledOnce(callback);
+        callback.firstCall.args[0].trim().should.equal(expected);
+
+        done();
+      });
+
+      lintStream.write(file);
+      lintStream.end();
+    });
+  });
+
+  describe('csslintPlugin.failFormatter()', function() {
+    it('should do nothing on valid code', function(done) {
+      var a = 0;
+
+      var file = getFile('fixtures/validCSS.css');
+
+      var lintStream = cssLintPlugin();
+      var formatterStream = cssLintPlugin.formatter('fail');
+
+      formatterStream.on('data', function() {
+        ++a;
+      });
+      lintStream.on('data', function(file) {
+        formatterStream.write(file);
+      });
+      lintStream.once('end', function() {
+        formatterStream.end();
+      });
+
+      formatterStream.once('end', function() {
+        a.should.equal(1);
+
+        done();
+      });
+
+      lintStream.write(file);
+      lintStream.end();
+    });
+
+    it('should throw on invalid code', function(done) {
+      var file = getFile('fixtures/usingImportant.css');
+
+      var lintStream = cssLintPlugin();
+      var formatterStream = cssLintPlugin.formatter('fail');
+
+      formatterStream.on('error', function(e) {
+        e.message.should.equal('CSSLint failed for usingImportant.css');
+        done();
+      });
+      lintStream.on('data', function(file) {
+        formatterStream.write(file);
+      });
+      lintStream.once('end', function() {
+        formatterStream.end();
+      });
+
+      lintStream.write(file);
+      lintStream.end();
     });
   });
 
@@ -388,6 +472,93 @@ describe('gulp-csslint', function() {
 
       lintStream.write(file);
       lintStream.end();
+    });
+
+    it('should allow function as reporter', function(done) {
+      var a = 0;
+
+      var file = getFile('fixtures/usingImportant.css');
+
+      var lintStream = cssLintPlugin();
+      var formatterStream = cssLintPlugin.formatter(function(results, filename, options) {
+        ++a;
+      });
+
+      lintStream.on('data', function(file) {
+        formatterStream.write(file);
+      });
+      lintStream.once('end', function() {
+        formatterStream.end();
+      });
+
+      formatterStream.once('end', function() {
+        a.should.equal(1);
+
+        done();
+      });
+
+      lintStream.write(file);
+      lintStream.end();
+    });
+
+    it('should have a fail reporter', function() {
+      cssLintPlugin.formatter('fail').should.be.an.Object();
+    });
+
+    it('should accept object fulfilling the contract', function() {
+      cssLintPlugin.formatter(require('csslint-stylish')).should.be.an.Object();
+    });
+
+    it('should throw on invalid formatter', function(done) {
+      try {
+        cssLintPlugin.formatter({ somehing: 'really random' });
+      }
+      catch (e) {
+        e.message.should.equal('Invalid formatter: formatters need to be objects, and contain "id", "name", "startFormat", "endFormat" and "formatResults"');
+        done();
+      }
+    });
+
+    it('should throw on missing formatter', function(done) {
+      try {
+        cssLintPlugin.formatter('something-weird');
+      }
+      catch (e) {
+        e.message.should.equal('Invalid reporter: something-weird');
+        done();
+      }
+    });
+
+    it('should throw on unknown parameter', function(done) {
+      try {
+        cssLintPlugin.formatter(true);
+      }
+      catch (e) {
+        e.message.should.equal('Invalid custom formatter passed, please pass `null` or `undefined` if you want to pass options while using default formatter.');
+        done();
+      }
+    });
+  });
+
+  describe('cssLintPlugin.addFormatter()', function() {
+    afterEach(function() {
+      delete require.cache[require.resolve('../')];
+      delete require.cache[require.resolve('csslint')];
+
+      cssLint = require('csslint').CSSLint;
+      cssLintPlugin = require('../');
+    });
+
+    it('should be able to add custom formatters by passing strings', function() {
+      cssLint.hasFormat('stylish').should.equal(false);
+      cssLintPlugin.addFormatter('csslint-stylish');
+      cssLint.hasFormat('stylish').should.equal(true);
+    });
+
+    it('should be able to add custom formatters by passing objects', function() {
+      cssLint.hasFormat('stylish').should.equal(false);
+      cssLintPlugin.addFormatter(require('csslint-stylish'));
+      cssLint.hasFormat('stylish').should.equal(true);
     });
   });
 });

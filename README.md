@@ -61,9 +61,7 @@ Adds the following properties to the file object:
 
 ```js
 file.csslint.success = true; // or false
-file.csslint.errorCount = 0; // number of errors returned by CSSLint
-file.csslint.results = []; // CSSLint errors
-file.csslint.opt = {}; // The options you passed to CSSLint
+file.csslint.report = {}; // The report from CSSLint after linting the file
 ```
 
 ## Using formatters
@@ -81,26 +79,44 @@ gulp.task('lint', function() {
 
 ### Custom formatters
 
-Custom formatter functions can be passed as `csslint.formatter(formatterFunc)`. The formatter function will be called for each linted file and passed the file object as described above.
+Custom formatters can be provided by first adding a valid CSSLint-formatter, such as `csslint-stylish`, then using it:
 
 ```js
 var csslint = require('gulp-csslint');
-var gutil = require('gulp-util');
 
-var customFormatter = function(file) {
-  gutil.log(gutil.colors.cyan(file.csslint.errorCount)+' errors in '+gutil.colors.magenta(file.path));
-
-  file.csslint.results.forEach(function(result) {
-    gutil.log(result.error.message+' on line '+result.error.line);
-  });
-};
+csslint.addFormatter('csslint-stylish');
 
 gulp.task('lint', function() {
   gulp.src('lib/*.css')
     .pipe(csslint())
-    .pipe(csslint.formatter(customFormatter));
+    .pipe(csslint.formatter('stylish'))
 });
 ```
+
+You can provide the formatter by requiring it directly as well:
+
+```js
+var csslint = require('gulp-csslint');
+
+gulp.task('lint', function() {
+  gulp.src('lib/*.css')
+    .pipe(csslint())
+    .pipe(csslint.formatter(require('csslint-stylish')))
+});
+```
+
+You can also provide an object with the following contract to implement your own formatter:
+
+```js
+{
+  id: 'string', // Name passed to csslint.formatter
+  startFormat: function() {}, // Called before parsing any files, should return a string
+  startFormat: function() {}, // Called after parsing all files, should return a string
+  formatResult: function (results, filename, options) {} // Called with a results-object per file linted. Optionally called with a filename, and options passed to csslint.formatter(*formatter*, *options*)
+}
+```
+
+You can also provide a function, which is called for each file linted with the same arguments as `formatResults`.
 
 ### Formatter options
 You can also pass options to the built-in formatter, by passing a second option to `formatter`.
@@ -153,7 +169,7 @@ gulp.task('lint', function(cb) {
 });
 ```
 
-This functionality is only available when not using custom formatters.
+This functionality is only available when not using a custom formatting function.
 
 ## Custom rules
 

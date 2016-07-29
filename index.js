@@ -5,31 +5,11 @@ var through = require('through2');
 var csslint = require('csslint').CSSLint;
 var RcLoader = require('rcloader');
 
-var formatOutput = function(report, file, options) {
-  if (!report.messages.length) {
-    return {
-      success: true
-    };
+function validateFormatter(formatter) {
+  if (typeof formatter !== 'object' || !formatter.id || !formatter.startFormat || !formatter.endFormat || !formatter.endFormat || !formatter.formatResults) {
+    throw new Error('Invalid formatter: formatters need to be objects, and contain "id", "name", "startFormat", "endFormat" and "formatResults"');
   }
-
-  var filePath = (file.path || 'stdin');
-
-  // Handle errors
-  var results = report.messages.map(function(err) {
-    if (!err) return;
-    return { file: filePath, error: err };
-  }).filter(function(err) {
-    return err;
-  });
-
-  return {
-    originalReport: report,
-    errorCount: results.length,
-    success: false,
-    results: results,
-    options: options
-  };
-};
+}
 
 var cssLintPlugin = function(options) {
   options = options || {};
@@ -64,7 +44,7 @@ var cssLintPlugin = function(options) {
       var report = csslint.verify(content, ruleset);
 
       // send status down-stream
-      file.csslint = formatOutput(report, file, ruleset);
+      file.csslint = { report: report, success: !report.messages.length };
 
       cb(null, file);
     });
@@ -79,21 +59,29 @@ cssLintPlugin.formatter = function(customFormatter, options) {
   options = options || {};
 
   var logger = options.logger || process.stdout.write.bind(process.stdout);
-
-  if (typeof customFormatter === 'function') {
-    formatter = customFormatter;
-    builtInFormatter = false;
-  }
-  else if (typeof customFormatter === 'string') {
-    if (customFormatter === 'fail') {
-      return cssLintPlugin.failFormatter();
+  if (customFormatter) {
+    if (typeof customFormatter === 'function') {
+      formatter = customFormatter;
+      builtInFormatter = false;
     }
+    else if (typeof customFormatter === 'string') {
+      if (customFormatter === 'fail') {
+        return cssLintPlugin.failFormatter();
+      }
 
-    formatter = csslint.getFormatter(customFormatter);
-  }
+      formatter = csslint.getFormatter(customFormatter);
 
-  if (typeof formatter === 'undefined') {
-    throw new Error('Invalid formatter');
+      if (typeof formatter === 'undefined') {
+        throw new Error('Invalid reporter: ' + customFormatter);
+      }
+    }
+    else if (typeof customFormatter === 'object') {
+      validateFormatter(customFormatter);
+      formatter = customFormatter;
+    }
+    else {
+      throw new Error('Invalid custom formatter passed, please pass `null` or `undefined` if you want to pass options while using default formatter.');
+    }
   }
 
   if (builtInFormatter) {
@@ -105,10 +93,10 @@ cssLintPlugin.formatter = function(customFormatter, options) {
       // Only report if CSSLint was ran and errors were found
       if (file.csslint && !file.csslint.success) {
         if (builtInFormatter) {
-          output.push(formatter.formatResults(file.csslint.originalReport, file.path, options));
+          output.push(formatter.formatResults(file.csslint.report, file.path, options));
         }
         else {
-          formatter(file);
+          formatter(file.csslint.report, file.path, options);
         }
       }
 
@@ -135,6 +123,13 @@ cssLintPlugin.addRule = function(rule) {
     throw new Error('Invalid rule: rules need to be objects.');
   }
   csslint.addRule(rule);
+};
+
+cssLintPlugin.addFormatter = function(formatter) {
+  formatter = typeof formatter === 'string' ? require(formatter) : formatter;
+  validateFormatter(formatter);
+
+  csslint.addFormatter(formatter);
 };
 
 cssLintPlugin.failFormatter = function() {
