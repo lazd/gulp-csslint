@@ -1,0 +1,11 @@
+csslint: There are 2 problems in test/fixtures/usingImportant.css.
+
+usingImportant.css
+1: warning at line 2, col 1
+Bad naming: .mybox
+.mybox {
+
+usingImportant.css
+2: warning at line 3, col 3
+Use of !important
+  border: 1px solid black !important;
