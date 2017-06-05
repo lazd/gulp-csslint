@@ -171,6 +171,10 @@ gulp.task('lint', function(cb) {
 
 This functionality is only available when not using a custom formatting function.
 
+### Third party reporter
+
+[gulp-reporter](https://github.com/gucong3000/gulp-reporter) used in team project, it fails only when error belongs to the current author of git.
+
 ## Custom rules
 
 Use the `csslint.addRule(rule)` method to define custom rules that run in addition to the rules defined in the csslintrc file. See [Working with Rules](https://github.com/CSSLint/csslint/wiki/Working-with-Rules) for details.
