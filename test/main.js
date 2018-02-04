@@ -3,14 +3,15 @@
 var cssLintPlugin = require('../');
 var cssLint = require('csslint').CSSLint;
 var should = require('should');
-var gutil = require('gulp-util');
+var fancyLog = require('fancy-log');
+var Vinyl = require('vinyl');
 var fs = require('fs');
 var path = require('path');
 var sinon = require('sinon');
 
 var getFile = function(filePath) {
   filePath = 'test/' + filePath;
-  return new gutil.File({
+  return new Vinyl({
     path: filePath,
     cwd: 'test/',
     base: path.dirname(filePath),
@@ -408,7 +409,7 @@ describe('gulp-csslint', function() {
         }
       });
 
-      sinon.stub(gutil, 'log');
+      sinon.stub(fancyLog, 'info');
 
       formatterStream.on('data', function() {
         ++a;
@@ -423,9 +424,9 @@ describe('gulp-csslint', function() {
       formatterStream.once('end', function() {
         fs.writeFile('test-output.xml', output, function() {
           a.should.equal(1);
-          sinon.assert.notCalled(gutil.log);
+          sinon.assert.notCalled(fancyLog.info);
 
-          gutil.log.restore();
+          fancyLog.info.restore();
 
           fs.readFile('test-output.xml', function(err, content) {
             (err === null).should.be.true;

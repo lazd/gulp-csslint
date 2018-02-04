@@ -1,6 +1,7 @@
 'use strict';
 
-var gutil = require('gulp-util');
+// var gutil = require('gulp-util');
+var PluginError = require('plugin-error');
 var through = require('through2');
 var csslint = require('csslint').CSSLint;
 var RcLoader = require('rcloader');
@@ -16,7 +17,7 @@ var cssLintPlugin = function(options) {
   var rcLoader = new RcLoader('.csslintrc', options, { loader: 'async' });
   return through.obj(function(file, enc, cb) {
     if (file.isNull()) return cb(null, file); // pass along
-    if (file.isStream()) return cb(new gutil.PluginError('gulp-csslint: Streaming not supported'), file);
+    if (file.isStream()) return cb(new PluginError('gulp-csslint: Streaming not supported'), file);
 
     var ruleset = {};
     // Build a list of all available rules
@@ -139,7 +140,7 @@ cssLintPlugin.failFormatter = function() {
       return cb(null, file);
     }
 
-    return cb(new gutil.PluginError('gulp-csslint', 'CSSLint failed for ' + file.relative), file);
+    return cb(new PluginError('gulp-csslint', 'CSSLint failed for ' + file.relative), file);
   });
 };
 
