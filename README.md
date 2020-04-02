@@ -109,10 +109,11 @@ You can also provide an object with the following contract to implement your own
 
 ```js
 {
-  id: 'string', // Name passed to csslint.formatter
+  id: 'string', // ID passed to csslint.formatter
+  name: 'string', // Name passed to csslint.formatter
   startFormat: function() {}, // Called before parsing any files, should return a string
-  startFormat: function() {}, // Called after parsing all files, should return a string
-  formatResult: function (results, filename, options) {} // Called with a results-object per file linted. Optionally called with a filename, and options passed to csslint.formatter(*formatter*, *options*)
+  endFormat: function() {}, // Called after parsing all files, should return a string
+  formatResults: function (results, filename, options) {} // Called with a results-object per file linted. Optionally called with a filename, and options passed to csslint.formatter(*formatter*, *options*)
 }
 ```
 
